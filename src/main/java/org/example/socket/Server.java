@@ -18,7 +18,7 @@ public class Server {
                     Socket socket = serverSocket.accept();
                     new Thread(() -> {
                         try {
-                            communicationSerer(socket);
+                            communicationServer(socket);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -32,7 +32,7 @@ public class Server {
         }
     }
 
-    private static void communicationSerer(Socket socket) {
+    private static void communicationServer(Socket socket) {
         try (BufferedReader reader = new BufferedReader(new FileReader(new File("phrases.txt")));
              BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())))
         {
