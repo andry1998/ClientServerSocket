@@ -13,34 +13,14 @@ public class Server {
     public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(8080)) {
             System.out.println("Server started");
-            List<String> listPhrases = new ArrayList<String>();
-            Random rand = new Random();
             while (true)
                 try {
                     Socket socket = serverSocket.accept();
                     new Thread(() -> {
-                        try (BufferedReader reader = new BufferedReader(new FileReader(new File("phrases.txt")));
-                             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()))){
-                            System.out.println("Client connected");
-                            String line = reader.readLine();
-                            while (line != null) {
-                                listPhrases.add(line);
-                                line = reader.readLine();
-                            }
-                            String response = listPhrases.get(rand.nextInt(listPhrases.size()));
-                            //Thread.sleep(2000);
-                            System.out.println(response);
-                            writer.write(response);
-                            writer.newLine();
-                            writer.flush();
-                        } catch (IOException e) {
+                        try {
+                            communicationSerer(socket);
+                        } catch (Exception e) {
                             e.printStackTrace();
-                        } finally {
-                            try {
-                                socket.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
                         }
                     }).start();
 
@@ -49,6 +29,35 @@ public class Server {
                 }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private static void communicationSerer(Socket socket) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(new File("phrases.txt")));
+             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())))
+        {
+            List<String> listPhrases = new ArrayList<String>();
+            Random rand = new Random();
+            System.out.println("Client connected");
+            String line = reader.readLine();
+            while (line != null) {
+                listPhrases.add(line);
+                line = reader.readLine();
+            }
+            String response = listPhrases.get(rand.nextInt(listPhrases.size()));
+            //Thread.sleep(2000);
+            System.out.println(response);
+            writer.write(response);
+            writer.newLine();
+            writer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
